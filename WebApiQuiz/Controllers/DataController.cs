@@ -19,6 +19,8 @@ namespace WebApiQuiz.Controllers
         private const string JsonFilePath =
             @"C:\Users\db\Documents\data-quran-master\data-quran-master\word-text\madani-qurancom.json";
         private const string JsonFilePath2 = @"C:\Users\db\Documents\data-quran-master\data-quran-master\word-translation\en-qurancom.json";
+        private const string JsonFilePath3 =
+            @"C:\Users\db\Documents\data-quran-master\data-quran-master\word-transliteration\en-qurancom.json";
 
         [HttpGet("{id}")]
         public IActionResult GetData(int id)
@@ -72,17 +74,25 @@ namespace WebApiQuiz.Controllers
             // Deserialize the JSON into a dictionary
             var data2 = JsonConvert.DeserializeObject<Dictionary<string, string>>(json2);
 
+            // Read the third JSON file
+            var json3 = System.IO.File.ReadAllText(JsonFilePath3);
+
+            // Deserialize the JSON into a dictionary
+            var data3 = JsonConvert.DeserializeObject<Dictionary<string, string>>(json3);
+
             Dictionary<string, Dictionary<string, string>> results = null;
             try
             {
                 // Find all key-value pairs in the second dictionary that have keys that match the search results from the first dictionary
                 results = data2.Where(x => keys.Contains(x.Key))
-                    .ToDictionary(x => x.Key, x => new Dictionary<string, string>()
-                    {
-                        { "value", x.Value },
-                        { "key1", data1.ContainsKey(x.Key) ? x.Key : "" },
-                        { "value1", data1.ContainsKey(x.Key) ? data1[x.Key] : "" }
-                    });
+                               .ToDictionary(x => x.Key, x => new Dictionary<string, string>()
+                               {
+                           { "Arabic", x.Value },
+                          // { "key1", data1.ContainsKey(x.Key) ? x.Key : "" },
+                          { "Arabic-en", data3.ContainsKey(x.Key) ? data3[x.Key] : "" },
+                           { "Meaning", data1.ContainsKey(x.Key) ? data1[x.Key] : "" }
+                           
+                               });
             }
             catch (Exception ex)
             {
@@ -101,6 +111,7 @@ namespace WebApiQuiz.Controllers
                 return NotFound();
             }
         }
+
 
 
 
