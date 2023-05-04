@@ -119,7 +119,7 @@ namespace WebApiQuiz.Controllers
         public IActionResult GetContentForHeading(string heading)
         {
             
-            string markdownContent = System.IO.File.ReadAllText(markdownFilePath);
+            string markdownContent = System.IO.File.ReadAllText(markdownFilePath1);
 
             // Split the Markdown content into an array of lines
             string[] lines = markdownContent.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
