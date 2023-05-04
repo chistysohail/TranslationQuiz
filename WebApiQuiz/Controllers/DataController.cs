@@ -4,8 +4,10 @@
 //    {
 //    }
 //}
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.IO;
 
 namespace WebApiQuiz.Controllers
@@ -62,8 +64,7 @@ namespace WebApiQuiz.Controllers
             var data1 = JsonConvert.DeserializeObject<Dictionary<string, string>>(json1);
 
             // Search for all keys in the first dictionary that contain the given word
-            var keys = data1.Where(x => x.Value.Contains(word))
-                .Select(x => x.Key);
+            var keys = new HashSet<string>(data1.Where(x => x.Value.Contains(word)).Select(x => x.Key));
 
             // Read the second JSON file
             var json2 = System.IO.File.ReadAllText(JsonFilePath);
@@ -71,11 +72,25 @@ namespace WebApiQuiz.Controllers
             // Deserialize the JSON into a dictionary
             var data2 = JsonConvert.DeserializeObject<Dictionary<string, string>>(json2);
 
-            // Find all key-value pairs in the second dictionary that have keys that match the search results from the first dictionary
-            var results = data2.Where(x => keys.Contains(x.Key))
-                .ToDictionary(x => x.Key, x => x.Value);
+            Dictionary<string, Dictionary<string, string>> results = null;
+            try
+            {
+                // Find all key-value pairs in the second dictionary that have keys that match the search results from the first dictionary
+                results = data2.Where(x => keys.Contains(x.Key))
+                    .ToDictionary(x => x.Key, x => new Dictionary<string, string>()
+                    {
+                        { "value", x.Value },
+                        { "key1", data1.ContainsKey(x.Key) ? x.Key : "" },
+                        { "value1", data1.ContainsKey(x.Key) ? data1[x.Key] : "" }
+                    });
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception here, e.g. log it, display an error message, etc.
+                Console.WriteLine($"An error occurred: {ex.Message}");
+            }
 
-            if (results.Count > 0)
+            if (results != null && results.Count > 0)
             {
                 // Return the results as JSON
                 return Ok(results);
@@ -86,6 +101,7 @@ namespace WebApiQuiz.Controllers
                 return NotFound();
             }
         }
+
 
 
     }
