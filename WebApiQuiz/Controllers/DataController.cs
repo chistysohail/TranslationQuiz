@@ -5,10 +5,12 @@
 //    }
 //}
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO;
+using System.Text;
 
 namespace WebApiQuiz.Controllers
 {
@@ -16,17 +18,18 @@ namespace WebApiQuiz.Controllers
     [Route("[controller]")]
     public class DataController : ControllerBase
     {
-        private const string JsonFilePath =
+        private const string JsonFilePath1 =
             @"C:\Users\db\Documents\data-quran-master\data-quran-master\word-text\madani-qurancom.json";
         private const string JsonFilePath2 = @"C:\Users\db\Documents\data-quran-master\data-quran-master\word-translation\en-qurancom.json";
         private const string JsonFilePath3 =
             @"C:\Users\db\Documents\data-quran-master\data-quran-master\word-transliteration\en-qurancom.json";
-
+        private const string markdownFilePath1 = "C:\\Users\\db\\Documents\\data-quran-master\\data-quran-master\\ayah-translation\\en-ahmedali-tanzil.md";
+        private const string markdownFilePath2= "C:\\Users\\db\\Documents\\data-quran-master\\data-quran-master\\ayah-transliteration\\en-transliteration-tanzil.md";
         [HttpGet("{id}")]
         public IActionResult GetData(int id)
         {
             // Read the JSON file
-            var json = System.IO.File.ReadAllText(JsonFilePath);
+            var json = System.IO.File.ReadAllText(JsonFilePath1);
 
             // Deserialize the JSON into a dictionary
             var data = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
@@ -69,7 +72,7 @@ namespace WebApiQuiz.Controllers
             var keys = new HashSet<string>(data1.Where(x => x.Value.Contains(word)).Select(x => x.Key));
 
             // Read the second JSON file
-            var json2 = System.IO.File.ReadAllText(JsonFilePath);
+            var json2 = System.IO.File.ReadAllText(JsonFilePath1);
 
             // Deserialize the JSON into a dictionary
             var data2 = JsonConvert.DeserializeObject<Dictionary<string, string>>(json2);
@@ -112,7 +115,112 @@ namespace WebApiQuiz.Controllers
             }
         }
 
+        [HttpGet("heading/{heading}")]
+        public IActionResult GetContentForHeading(string heading)
+        {
+            
+            string markdownContent = System.IO.File.ReadAllText(markdownFilePath);
 
+            // Split the Markdown content into an array of lines
+            string[] lines = markdownContent.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+
+            // Loop through the lines and find the content for the given heading
+            string content = null;
+            for (int i = 0; i < lines.Length; i++)
+            {
+                // Check if the line matches the heading
+                if (lines[i].StartsWith($"# {heading}"))
+                {
+                    // Get the content for the section by iterating through the lines until we reach the next heading or the end of the file
+                    StringBuilder sectionContent = new StringBuilder();
+                    for (int j = i + 1; j < lines.Length; j++)
+                    {
+                        // Check if the current line is a heading
+                        if (lines[j].StartsWith("#"))
+                        {
+                            // If it is, we've reached the next section, so break out of the loop
+                            break;
+                        }
+                        else
+                        {
+                            // If it's not, append the line to the section content
+                            sectionContent.AppendLine(lines[j]);
+                        }
+                    }
+                    content = sectionContent.ToString().Trim();
+                    break;
+                }
+            }
+
+            if (content != null)
+            {
+                // Return the content as plain text
+                return Content(content, "text/plain");
+            }
+            else
+            {
+                // Return a 404 error if the heading is not found
+                return NotFound();
+            }
+        }
+
+        [HttpGet("searchWord/{word}")]
+        public IActionResult SearchWord(string word)
+        {
+            
+            string markdownContent = System.IO.File.ReadAllText(markdownFilePath1);
+
+            // Split the Markdown content into an array of lines
+            string[] lines = markdownContent.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+
+            Dictionary<string, string> results = new Dictionary<string, string>();
+
+            // Loop through the lines and find the sections that contain the search word
+            for (int i = 0; i < lines.Length; i++)
+            {
+                // Check if the line matches a heading
+                if (lines[i].StartsWith("#"))
+                {
+                    // If it does, get the heading number and store it temporarily
+                    string heading = lines[i].TrimStart('#', ' ');
+                    string sectionContent = "";
+                    // Iterate through the lines until we reach the next heading or the end of the file
+                    for (int j = i + 1; j < lines.Length; j++)
+                    {
+                        // Check if the current line is a heading
+                        if (lines[j].StartsWith("#"))
+                        {
+                            // If it is, we've reached the next section, so break out of the loop
+                            break;
+                        }
+                        else
+                        {
+                            // If it's not, check if it contains the search word
+                            if (lines[j].IndexOf(word, StringComparison.OrdinalIgnoreCase) >= 0)
+                            {
+                                // If it does, add the section content to the results dictionary with the heading as the key
+                                sectionContent += lines[j] + Environment.NewLine;
+                            }
+                        }
+                    }
+                    if (!string.IsNullOrEmpty(sectionContent))
+                    {
+                        results[heading] = sectionContent.Trim();
+                    }
+                }
+            }
+
+            if (results.Count > 0)
+            {
+                // Return the results as JSON
+                return Ok(results);
+            }
+            else
+            {
+                // Return a 404 error if no results are found
+                return NotFound();
+            }
+        }
 
 
     }
