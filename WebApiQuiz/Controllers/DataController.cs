@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Text;
+using WebApiQuiz.DTO;
 
 namespace WebApiQuiz.Controllers
 {
@@ -692,8 +693,169 @@ namespace WebApiQuiz.Controllers
 
         }
 
-    }
 
-   
+        [HttpGet("search/markdown")]
+        public IActionResult SearchMarkdown([FromQuery] string[] headers)
+        {
+            // Initialize a list to hold the search results for each query
+            List<SearchResults> searchResults = new List<SearchResults>();
+
+            // Loop through the headers in the input array
+            foreach (string header in headers)
+            {
+                // Create a new SearchResults object for this query
+                SearchResults results = new SearchResults(header);
+
+                // Read the contents of the Markdown files
+                //string markdownFilePath1 = "path/to/your/first/markdown/file.md";
+                //string markdownFilePath2 = "path/to/your/second/markdown/file.md";
+                //string markdownFilePath3 = "path/to/your/third/markdown/file.md";
+
+                string markdownContent1 = System.IO.File.ReadAllText(markdownFilePath1);
+                string markdownContent2 = System.IO.File.ReadAllText(markdownFilePath2);
+                string markdownContent3 = System.IO.File.ReadAllText(markdownFilePath3);
+
+                // Split the Markdown contents into arrays of lines
+                string[] lines1 = markdownContent1.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                string[] lines2 = markdownContent2.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                string[] lines3 = markdownContent3.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+
+                // Loop through the lines of the first Markdown file and find the section that matches the header
+                for (int i = 0; i < lines1.Length; i++)
+                {
+                    // Check if the line matches the header
+                    if (lines1[i].StartsWith("#") && lines1[i].TrimStart('#', ' ') == header)
+                    {
+                        // If it does, iterate through the lines until we reach the next heading or the end of the file
+                        for (int j = i + 1; j < lines1.Length; j++)
+                        {
+                            // Check if the current line is a heading
+                            if (lines1[j].StartsWith("#"))
+                            {
+                                // If it is, we've reached the next section, so break out of the loop
+                                break;
+                            }
+                            else
+                            {
+                                // If it's not, add it to the search results for this query
+                                results.File1Results.Add(lines1[j]);
+                            }
+                        }
+                    }
+                }
+
+                // Loop through the lines of the second Markdown file and find the section that matches the header
+                for (int i = 0; i < lines2.Length; i++)
+                {
+                    // Check if the line matches the header
+                    if (lines2[i].StartsWith("#") && lines2[i].TrimStart('#', ' ') == header)
+                    {
+                        // If it does, iterate through the lines until            // we reach the next heading or the end of the file
+                        for (int j = i + 1; j < lines2.Length; j++)
+                        {
+                            // Check if the current line is a heading
+                            if (lines2[j].StartsWith("#"))
+                            {
+                                // If it is, we've reached the next section, so break out of the loop
+                                break;
+                            }
+                            else
+                            {
+                                // If it's not, add it to the search results for this query
+                                results.File2Results.Add(lines2[j]);
+                            }
+                        }
+                    }
+                }
+
+                // Loop through the lines of the third Markdown file and find the section that matches the header
+                for (int i = 0; i < lines3.Length; i++)
+                {
+                    // Check if the line matches the header
+                    if (lines3[i].StartsWith("#") && lines3[i].TrimStart('#', ' ') == header)
+                    {
+                        // If it does, iterate through the lines until we reach the next heading or the end of the file
+                        for (int j = i + 1; j < lines3.Length; j++)
+                        {
+                            // Check if the current line is a heading
+                            if (lines3[j].StartsWith("#"))
+                            {
+                                // If it is, we've reached the next section, so break out of the loop
+                                break;
+                            }
+                            else
+                            {
+                                // If it's not, add it to the search results for this query
+                                results.File3Results.Add(lines3[j]);
+                            }
+                        }
+                    }
+                }
+
+                // Add the search results for this query to the list of all search results
+                searchResults.Add(results);
+            }
+
+            // Check if there were any search results
+            if (searchResults.Count > 0)
+            {
+                // Create a string builder to concatenate the search results into a single string
+                StringBuilder sb = new StringBuilder();
+
+                // Loop through the search results and append them to the string builder
+                foreach (SearchResults results in searchResults)
+                {
+                    // Check if any results were found for this query
+                    if (results.File1Results.Count > 0 || results.File2Results.Count > 0 ||
+                        results.File3Results.Count > 0)
+                    {
+                        // Append the header for this query
+                        sb.AppendLine($"Search results for '{results.Header}':");
+
+                        // Append the results for each file
+                        if (results.File1Results.Count > 0)
+                        {
+                            sb.AppendLine("Results from file 1:");
+                            foreach (string line in results.File1Results)
+                            {
+                                sb.AppendLine(line);
+                            }
+                        }
+
+                        if (results.File2Results.Count > 0)
+                        {
+                            sb.AppendLine("Results from file 2:");
+                            foreach (string line in results.File2Results)
+                            {
+                                sb.AppendLine(line);
+                            }
+                        }
+
+                        if (results.File3Results.Count > 0)
+                        {
+                            sb.AppendLine("Results from file 3:");
+                            foreach (string line in results.File3Results)
+                            {
+                                sb.AppendLine(line);
+                            }
+                        }
+
+                        // Add a blank line between the results for different queries
+                        sb.AppendLine();
+                    }
+                }
+
+                // Return the search results as an HTTP response
+                return Ok(sb.ToString());
+            }
+            else
+            {
+                // Return a 404 error if no sections are found that match the search headers
+                return NotFound();
+            }
+
+        }
+    }
 }
+
 
