@@ -360,6 +360,8 @@ namespace WebApiQuiz.Controllers
 
             if (results.Count > 0)
             {
+
+
                 // Return the results as JSON
                 return Ok(results);
             }
@@ -369,6 +371,8 @@ namespace WebApiQuiz.Controllers
                 return NotFound();
             }
         }
+
+
 
         [HttpGet("search/content/{header}")]
         public IActionResult SearchContent(string header)
@@ -526,5 +530,170 @@ namespace WebApiQuiz.Controllers
 
 
         }
+
+        [HttpGet("search/content")]
+        public IActionResult SearchContent([FromQuery] string[] headers)
+        {
+            //string markdownFilePath1 = "path/to/your/first/markdown/file.md";
+            //string markdownFilePath2 = "path/to/your/second/markdown/file.md";
+            //string markdownFilePath3 = "path/to/your/third/markdown/file.md";
+
+            string markdownContent1 = System.IO.File.ReadAllText(markdownFilePath1);
+            string markdownContent2 = System.IO.File.ReadAllText(markdownFilePath2);
+            string markdownContent3 = System.IO.File.ReadAllText(markdownFilePath3);
+
+            // Split the Markdown contents into arrays of lines
+            string[] lines1 = markdownContent1.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            string[] lines2 = markdownContent2.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            string[] lines3 = markdownContent3.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+
+            string sectionContent1 = "";
+            string sectionContent2 = "";
+            string sectionContent3 = "";
+
+            // Loop through the headers in the input array
+            foreach (string header in headers)
+            {
+                // Loop through the lines of the first Markdown file and find the section that matches the header
+                for (int i = 0; i < lines1.Length; i++)
+                {
+                    // Check if the line matches the header
+                    if (lines1[i].StartsWith("#") && lines1[i].TrimStart('#', ' ') == header)
+                    {
+                        // If it does, iterate through the lines until we reach the next heading or the end of the file
+                        for (int j = i + 1; j < lines1.Length; j++)
+                        {
+                            // Check if the current line is a heading
+                            if (lines1[j].StartsWith("#"))
+                            {
+                                // If it is, we've reached the next section, so break out of the loop
+                                break;
+                            }
+                            else
+                            {
+                                // If it's not, append it to the section content
+                                sectionContent1 += lines1[j] + Environment.NewLine;
+                            }
+                        }
+                    }
+                }
+
+                // Loop through the lines of the second Markdown file and find the section that matches the header
+                for (int i = 0; i < lines2.Length; i++)
+                {
+                    // Check if the line matches the header
+                    if (lines2[i].StartsWith("#") && lines2[i].TrimStart('#', ' ') == header)
+                    {
+                        // If it does, iterate through the lines until we reach the next heading or the end of the file
+                        for (int j = i + 1; j < lines2.Length; j++)
+                        {
+                            // Check if the current line is a heading
+                            if (lines2[j].StartsWith("#"))
+                            {
+                                // If it is, we've reached the next section, so break out of the loop
+                                break;
+                            }
+                            else
+                            {
+                                // If it's not, append it to the section content
+                                sectionContent2 += lines2[j] + Environment.NewLine;
+                            }
+                        }
+                    }
+                }
+
+                // Loop through the lines of the third Markdown file and find the section that matches the header
+                for (int i = 0; i < lines3.Length; i++)
+                {
+                    // Check if the line matches the header
+                    if (lines3[i].StartsWith("#") && lines3[i].TrimStart('#', ' ') == header)
+                    {
+                        // If it does, iterate through the lines until we reach the next heading or the end of the file
+                        for (int j = i + 1; j < lines3.Length; j++)
+                        {
+                            // Check if the current line is a heading
+                            if (lines3[j].StartsWith("#"))
+                            {
+                                // If it is, we've reached the next section, so break out of the loop
+                                break;
+                            }
+                            else
+                            {
+                                // If it's not, append it to the section content
+                                sectionContent3 += lines3[j] + Environment.NewLine;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Check if there was a match in all three files
+            if (!string.IsNullOrEmpty(sectionContent1) && !string.IsNullOrEmpty(sectionContent2) &&
+                !string.IsNullOrEmpty(sectionContent3))
+            {
+                // Combine the section content from all three files
+                string combinedContent = sectionContent1 + Environment.NewLine + sectionContent2 + Environment.NewLine +
+                                         sectionContent3;
+
+                // Return the combined section content
+                return Ok(combinedContent.Trim());
+            }
+            // Check if there was a match in the first two files
+            else if (!string.IsNullOrEmpty(sectionContent1) && !string.IsNullOrEmpty(sectionContent2))
+            {
+                // Combine the section content from the first two files
+                string combinedContent = sectionContent1 + Environment.NewLine + sectionContent2;
+
+                // Return the combined section content
+                return Ok(combinedContent.Trim());
+            }
+            // Check if there was a match in the first and third files
+            else if (!string.IsNullOrEmpty(sectionContent1) && !string.IsNullOrEmpty(sectionContent3))
+            {
+                // Combine the section content from the first and third files
+                string combinedContent = sectionContent1 + Environment.NewLine + sectionContent3;
+
+                // Return the combined section content
+                return Ok(combinedContent.Trim());
+            }
+            // Check if there was a match in the second and third files
+            else if (!string.IsNullOrEmpty(sectionContent2) && !string.IsNullOrEmpty(sectionContent3))
+            {
+                // Combine the section content from the second and third files
+                string combinedContent = sectionContent2 + Environment.NewLine + sectionContent3;
+
+                // Return the combined section content
+                return Ok(combinedContent.Trim());
+            }
+            // Check if there was a match in the first file
+            else if (!string.IsNullOrEmpty(sectionContent1))
+            {
+                // Return the section content from the first file
+                return Ok(sectionContent1.Trim());
+            }
+            // Check if there was a match in the second file
+            else if (!string.IsNullOrEmpty(sectionContent2))
+            {
+                // Return the section content from the second file
+                return Ok(sectionContent2.Trim());
+            }
+            // Check if there was a match in the third file
+            else if (!string.IsNullOrEmpty(sectionContent3))
+            {
+                // Return the section content from the third file
+                return Ok(sectionContent3.Trim());
+            }
+            else
+            {
+                // Return a 404 error if no sections are found that match the search headers
+                return NotFound();
+            }
+
+
+        }
+
     }
+
+   
 }
+
