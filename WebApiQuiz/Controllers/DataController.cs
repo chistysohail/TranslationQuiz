@@ -13,6 +13,7 @@ using System.IO;
 using System.Reflection.PortableExecutable;
 using System.Text;
 using WebApiQuiz.DTO;
+using static WebApiQuiz.DTO.RandomSetData;
 
 namespace WebApiQuiz.Controllers
 {
@@ -918,7 +919,7 @@ namespace WebApiQuiz.Controllers
                 //string markdownFilePath2 = "path/to/your/second/markdown/file.md";
                 //string markdownFilePath3 = "path/to/your/third/markdown/file.md";
 
-               // string markdownContent1 = System.IO.File.ReadAllText(markdownFilePath1);
+                // string markdownContent1 = System.IO.File.ReadAllText(markdownFilePath1);
                 string markdownContent2 = System.IO.File.ReadAllText(markdownFilePath2);
                 string markdownContent3 = System.IO.File.ReadAllText(markdownFilePath3);
 
@@ -1062,6 +1063,137 @@ namespace WebApiQuiz.Controllers
             }
 
 
+        }
+
+        //[HttpGet("random")]
+        //public IActionResult Random()
+        //{
+        //    // Read the first JSON file
+        //    var json1 = System.IO.File.ReadAllText(JsonFilePath1);
+
+        //    // Deserialize the JSON into a dictionary
+        //    var data1 = JsonConvert.DeserializeObject<Dictionary<string, string>>(json1);
+
+        //    // Select a random key from the dictionary
+        //    var randomKey = data1.Keys.ElementAt(new Random().Next(data1.Count));
+
+        //    // Read the second JSON file
+        //    var json2 = System.IO.File.ReadAllText(JsonFilePath2);
+
+        //    // Deserialize the JSON into a dictionary
+        //    var data2 = JsonConvert.DeserializeObject<Dictionary<string, string>>(json2);
+
+        //    // Read the third JSON file
+        //    var json3 = System.IO.File.ReadAllText(JsonFilePath3);
+
+        //    // Deserialize the JSON into a dictionary
+        //    var data3 = JsonConvert.DeserializeObject<Dictionary<string, string>>(json3);
+
+        //    Dictionary<string, Dictionary<string, string>> results = null;
+        //    try
+        //    {
+        //        // Build the results dictionary using the randomly selected key
+        //        results = new Dictionary<string, Dictionary<string, string>>()
+        //        {
+        //            {
+        //                randomKey,
+        //                new Dictionary<string, string>()
+        //                {
+        //                    { "Arabic", data1[randomKey] },
+        //                    { "Arabic-en", data3.ContainsKey(randomKey) ? data3[randomKey] : "" },
+        //                    { "Meaning", data2.ContainsKey(randomKey) ? data2[randomKey] : "" }
+        //                }
+        //            }
+        //        };
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Handle the exception here, e.g. log it, display an error message, etc.
+        //        Console.WriteLine($"An error occurred: {ex.Message}");
+        //    }
+
+        //    if (results != null && results.Count > 0)
+        //    {
+        //        // Return the results as JSON
+        //        return Ok(results);
+        //    }
+        //    else
+        //    {
+        //        // Return a 404 error if no results are found
+        //        return NotFound();
+        //    }
+        //}
+
+        //[HttpGet("random")]
+        //public IActionResult Random()
+        //{
+        //    // Read the first JSON file
+        //    var json1 = System.IO.File.ReadAllText(JsonFilePath1);
+
+        //    // Deserialize the JSON into a dictionary
+        //    var data1 = JsonConvert.DeserializeObject<Dictionary<string, string>>(json1);
+
+        //    // Read the second JSON file
+        //    var json2 = System.IO.File.ReadAllText(JsonFilePath2);
+
+        //    // Deserialize the JSON into a dictionary
+        //    var data2 = JsonConvert.DeserializeObject<Dictionary<string, string>>(json2);
+
+        //    // Read the third JSON file
+        //    var json3 = System.IO.File.ReadAllText(JsonFilePath3);
+
+        //    // Deserialize the JSON into a dictionary
+        //    var data3 = JsonConvert.DeserializeObject<Dictionary<string, string>>(json3);
+
+        //    Dictionary<string, Dictionary<string, string>> results = new Dictionary<string, Dictionary<string, string>>();
+        //    try
+        //    {
+        //        // Select four random keys from the first dictionary
+        //        var randomKeys = data1.Keys.OrderBy(x => Guid.NewGuid()).Take(4);
+
+        //        // Build the results dictionary using the randomly selected keys
+        //        foreach (var randomKey in randomKeys)
+        //        {
+        //            results.Add(randomKey, new Dictionary<string, string>()
+        //            {
+        //                { "Arabic", data1[randomKey] },
+        //                { "Arabic-en", data3.ContainsKey(randomKey) ? data3[randomKey] : "" },
+        //                { "Meaning", data2.ContainsKey(randomKey) ? data2[randomKey] : "" }
+        //            });
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Handle the exception here, e.g. log it, display an error message, etc.
+        //        Console.WriteLine($"An error occurred: {ex.Message}");
+        //    }
+
+        //    if (results.Count > 0)
+        //    {
+        //        // Return the results as JSON
+        //        return Ok(results);
+        //    }
+        //    else
+        //    {
+        //        // Return a 404 error if no results are found
+        //        return NotFound();
+        //    }
+        //}
+        [HttpGet("random")]
+        public IActionResult Random()
+        {
+            var results = RandomSetGenerator.GenerateRandomSets(JsonFilePath1, JsonFilePath2, JsonFilePath3);
+
+            if (results!=null)
+            {
+                // Return the results as JSON
+                return Ok(results);
+            }
+            else
+            {
+                // Return a 404 error if no results are found
+                return NotFound();
+            }
         }
 
     }
