@@ -22,22 +22,22 @@ namespace WebApiQuiz.Controllers
     public class DataController : ControllerBase
     {
         private const string JsonFilePath1 =
-            @"C:\Users\db\Documents\data-quran-master\data-quran-master\word-text\madani-qurancom.json";
+            @"C:\data-quran-master\data-quran-master\word-text\madani-qurancom.json";
 
         private const string JsonFilePath2 =
-            @"C:\Users\db\Documents\data-quran-master\data-quran-master\word-translation\en-qurancom.json";
+            @"C:\data-quran-master\data-quran-master\word-translation\en-qurancom.json";
 
         private const string JsonFilePath3 =
-            @"C:\Users\db\Documents\data-quran-master\data-quran-master\word-transliteration\en-qurancom.json";
+            @"C:\data-quran-master\data-quran-master\word-transliteration\en-qurancom.json";
 
         private const string markdownFilePath1 =
-            "C:\\Users\\db\\Documents\\data-quran-master\\data-quran-master\\ayah-translation\\en-ahmedali-tanzil.md";
+            @"C:\data-quran-master\data-quran-master\ayah-translation\en-ahmedali-tanzil.md";
 
         private const string markdownFilePath2 =
-            "C:\\Users\\db\\Documents\\data-quran-master\\data-quran-master\\ayah-transliteration\\en-transliteration-tanzil.md";
+            @"C:\data-quran-master\data-quran-master\ayah-transliteration\en-transliteration-tanzil.md";
 
         private const string markdownFilePath3 =
-            "C:\\Users\\db\\Documents\\data-quran-master\\data-quran-master\\ayah-text\\simple.md";
+            @"C:\data-quran-master\data-quran-master\ayah-text\simple.md";
 
         [HttpGet("{id}")]
         public IActionResult GetData(int id)
@@ -380,9 +380,7 @@ namespace WebApiQuiz.Controllers
         [HttpGet("search/content/{header}")]
         public IActionResult SearchContent(string header)
         {
-            //string markdownFilePath1 = "path/to/your/first/markdown/file.md";
-            //string markdownFilePath2 = "path/to/your/second/markdown/file.md";
-            //string markdownFilePath3 = "path/to/your/third/markdown/file.md";
+           
 
             string markdownContent1 = System.IO.File.ReadAllText(markdownFilePath1);
             string markdownContent2 = System.IO.File.ReadAllText(markdownFilePath2);
@@ -537,9 +535,7 @@ namespace WebApiQuiz.Controllers
         [HttpGet("search/content")]
         public IActionResult SearchContent([FromQuery] string[] headers)
         {
-            //string markdownFilePath1 = "path/to/your/first/markdown/file.md";
-            //string markdownFilePath2 = "path/to/your/second/markdown/file.md";
-            //string markdownFilePath3 = "path/to/your/third/markdown/file.md";
+            
 
             string markdownContent1 = System.IO.File.ReadAllText(markdownFilePath1);
             string markdownContent2 = System.IO.File.ReadAllText(markdownFilePath2);
@@ -708,10 +704,7 @@ namespace WebApiQuiz.Controllers
                 // Create a new SearchResults object for this query
                 SearchResults results = new SearchResults(header);
 
-                // Read the contents of the Markdown files
-                //string markdownFilePath1 = "path/to/your/first/markdown/file.md";
-                //string markdownFilePath2 = "path/to/your/second/markdown/file.md";
-                //string markdownFilePath3 = "path/to/your/third/markdown/file.md";
+                
 
                 string markdownContent1 = System.IO.File.ReadAllText(markdownFilePath1);
                 string markdownContent2 = System.IO.File.ReadAllText(markdownFilePath2);
@@ -862,10 +855,7 @@ namespace WebApiQuiz.Controllers
         [HttpGet("search/markdown/{word}")]
         public IActionResult SearchMarkdown(string word)
         {
-            //string markdownFilePath1 = "path/to/your/first/markdown/file.md";
-            //string markdownFilePath2 = "path/to/your/second/markdown/file.md";
-            //string markdownFilePath3 = "path/to/your/third/markdown/file.md";
-            //string markdownFilePath = "path/to/your/markdown/file.md";
+          
             string markdownContent1 = System.IO.File.ReadAllText(markdownFilePath1);
 
             // Split the Markdown content into an array of lines
@@ -915,9 +905,7 @@ namespace WebApiQuiz.Controllers
                 SearchResults results2 = new SearchResults(header);
 
                 // Read the contents of the Markdown files
-                //string markdownFilePath1 = "path/to/your/first/markdown/file.md";
-                //string markdownFilePath2 = "path/to/your/second/markdown/file.md";
-                //string markdownFilePath3 = "path/to/your/third/markdown/file.md";
+              
 
                 // string markdownContent1 = System.IO.File.ReadAllText(markdownFilePath1);
                 string markdownContent2 = System.IO.File.ReadAllText(markdownFilePath2);
@@ -1065,120 +1053,7 @@ namespace WebApiQuiz.Controllers
 
         }
 
-        //[HttpGet("random")]
-        //public IActionResult Random()
-        //{
-        //    // Read the first JSON file
-        //    var json1 = System.IO.File.ReadAllText(JsonFilePath1);
-
-        //    // Deserialize the JSON into a dictionary
-        //    var data1 = JsonConvert.DeserializeObject<Dictionary<string, string>>(json1);
-
-        //    // Select a random key from the dictionary
-        //    var randomKey = data1.Keys.ElementAt(new Random().Next(data1.Count));
-
-        //    // Read the second JSON file
-        //    var json2 = System.IO.File.ReadAllText(JsonFilePath2);
-
-        //    // Deserialize the JSON into a dictionary
-        //    var data2 = JsonConvert.DeserializeObject<Dictionary<string, string>>(json2);
-
-        //    // Read the third JSON file
-        //    var json3 = System.IO.File.ReadAllText(JsonFilePath3);
-
-        //    // Deserialize the JSON into a dictionary
-        //    var data3 = JsonConvert.DeserializeObject<Dictionary<string, string>>(json3);
-
-        //    Dictionary<string, Dictionary<string, string>> results = null;
-        //    try
-        //    {
-        //        // Build the results dictionary using the randomly selected key
-        //        results = new Dictionary<string, Dictionary<string, string>>()
-        //        {
-        //            {
-        //                randomKey,
-        //                new Dictionary<string, string>()
-        //                {
-        //                    { "Arabic", data1[randomKey] },
-        //                    { "Arabic-en", data3.ContainsKey(randomKey) ? data3[randomKey] : "" },
-        //                    { "Meaning", data2.ContainsKey(randomKey) ? data2[randomKey] : "" }
-        //                }
-        //            }
-        //        };
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Handle the exception here, e.g. log it, display an error message, etc.
-        //        Console.WriteLine($"An error occurred: {ex.Message}");
-        //    }
-
-        //    if (results != null && results.Count > 0)
-        //    {
-        //        // Return the results as JSON
-        //        return Ok(results);
-        //    }
-        //    else
-        //    {
-        //        // Return a 404 error if no results are found
-        //        return NotFound();
-        //    }
-        //}
-
-        //[HttpGet("random")]
-        //public IActionResult Random()
-        //{
-        //    // Read the first JSON file
-        //    var json1 = System.IO.File.ReadAllText(JsonFilePath1);
-
-        //    // Deserialize the JSON into a dictionary
-        //    var data1 = JsonConvert.DeserializeObject<Dictionary<string, string>>(json1);
-
-        //    // Read the second JSON file
-        //    var json2 = System.IO.File.ReadAllText(JsonFilePath2);
-
-        //    // Deserialize the JSON into a dictionary
-        //    var data2 = JsonConvert.DeserializeObject<Dictionary<string, string>>(json2);
-
-        //    // Read the third JSON file
-        //    var json3 = System.IO.File.ReadAllText(JsonFilePath3);
-
-        //    // Deserialize the JSON into a dictionary
-        //    var data3 = JsonConvert.DeserializeObject<Dictionary<string, string>>(json3);
-
-        //    Dictionary<string, Dictionary<string, string>> results = new Dictionary<string, Dictionary<string, string>>();
-        //    try
-        //    {
-        //        // Select four random keys from the first dictionary
-        //        var randomKeys = data1.Keys.OrderBy(x => Guid.NewGuid()).Take(4);
-
-        //        // Build the results dictionary using the randomly selected keys
-        //        foreach (var randomKey in randomKeys)
-        //        {
-        //            results.Add(randomKey, new Dictionary<string, string>()
-        //            {
-        //                { "Arabic", data1[randomKey] },
-        //                { "Arabic-en", data3.ContainsKey(randomKey) ? data3[randomKey] : "" },
-        //                { "Meaning", data2.ContainsKey(randomKey) ? data2[randomKey] : "" }
-        //            });
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Handle the exception here, e.g. log it, display an error message, etc.
-        //        Console.WriteLine($"An error occurred: {ex.Message}");
-        //    }
-
-        //    if (results.Count > 0)
-        //    {
-        //        // Return the results as JSON
-        //        return Ok(results);
-        //    }
-        //    else
-        //    {
-        //        // Return a 404 error if no results are found
-        //        return NotFound();
-        //    }
-        //}
+       
         [HttpGet("random")]
         public IActionResult Random()
         {
